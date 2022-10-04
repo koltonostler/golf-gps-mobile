@@ -6,6 +6,7 @@
  * @flow strict-local
  */
 import firestore from '@react-native-firebase/firestore';
+import Location from './components/Location';
 import React, {useState} from 'react';
 import type {Node} from 'react';
 import {
@@ -133,6 +134,7 @@ const App: () => Node = () => {
               </Text>
             </Section>
           </View>
+          <Location lat={currentHoleLatitude} lon={currentHoleLongitude} />
         </View>
       </ScrollView>
     </SafeAreaView>
