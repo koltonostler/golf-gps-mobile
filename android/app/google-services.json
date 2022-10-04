@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "207041983623",
+    "project_id": "fir-learning-42af9",
+    "storage_bucket": "fir-learning-42af9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207041983623:android:a725de596b3f6efe183422",
+        "android_client_info": {
+          "package_name": "com.golfgps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207041983623-1n6qsfuu9n8gtjtg47c0bcsekq7pjlgh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxTKj1brryGypiaLU1EuIzclQmoZPfJ-M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207041983623-1n6qsfuu9n8gtjtg47c0bcsekq7pjlgh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
