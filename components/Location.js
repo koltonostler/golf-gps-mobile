@@ -132,7 +132,7 @@ const Location = props => {
           android: 'high',
           ios: 'best',
         },
-        enableHighAccuracy: highAccuracy,
+        enableHighAccuracy: true,
         timeout: 15000,
         maximumAge: 10000,
         distanceFilter: 0,

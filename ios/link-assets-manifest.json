@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "assets/fonts/Jaldi-Bold.ttf",
+      "sha1": "d8dc4b326797de3acaf79efa113cf75eb65e47ae"
+    },
+    {
+      "path": "assets/fonts/Jaldi-Regular.ttf",
+      "sha1": "22ed42b717eb09d29308476d1518ded49e5d1769"
+    }
+  ]
+}

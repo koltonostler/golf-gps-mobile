@@ -3,19 +3,7 @@ import {Button, View, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './components/Home';
-import Location from './components/Location';
-
-// function HomeScreen({navigation}) {
-//   return (
-//     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-//       <Text>Home Screen</Text>
-//       <Button
-//         title="Go to Details"
-//         onPress={() => navigation.navigate('Details')}
-//       />
-//     </View>
-//   );
-// }
+import Mainapp from './components/Mainapp';
 
 function DetailsScreen({navigation}) {
   return (
@@ -27,8 +15,8 @@ function DetailsScreen({navigation}) {
       />
       <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
       <Button
-        title="Go to Location"
-        onPress={() => navigation.navigate('Location')}
+        title="Go to Main"
+        onPress={() => navigation.navigate('Mainapp')}
       />
       <Button title="Go back" onPress={() => navigation.goBack()} />
       <Button
@@ -56,8 +44,8 @@ function App() {
           options={{headerShown: false}}
         />
         <Stack.Screen
-          name="Location"
-          component={Location}
+          name="Mainapp"
+          component={Mainapp}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

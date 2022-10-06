@@ -1,18 +1,7 @@
 import firestore from '@react-native-firebase/firestore';
-import Location from './components/Location';
 import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  useColorScheme,
-  View,
-} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {StyleSheet, Text, TextInput, View} from 'react-native';
+import Location from './Location';
 
 async function getCourse() {
   const courseDocument = await firestore()
@@ -22,7 +11,7 @@ async function getCourse() {
   return courseDocument;
 }
 
-const Main = () => {
+const Mainapp = () => {
   const [currentCourse, setCurrentCourse] = useState('');
   const [frontLatitude, setFrontLatitude] = useState();
   const [frontLongitude, setFrontLongitude] = useState();
@@ -89,4 +78,4 @@ const Main = () => {
 
 const styles = StyleSheet.create({});
 
-export default Main;
+export default Mainapp;
