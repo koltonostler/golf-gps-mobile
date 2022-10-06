@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Switch,
   Text,
   ToastAndroid,
   View,
@@ -16,9 +15,13 @@ import Geolocation from 'react-native-geolocation-service';
 
 import appConfig from '../app.json';
 
-export default function Location(props) {
-  const currentHoleLatitude = props.lat;
-  const currentHoleLongitude = props.lon;
+const Location = props => {
+  const centerLat = props.centerLat;
+  const centerLon = props.centerLon;
+  const backLat = props.backLat;
+  const backLon = props.backLon;
+  const frontLat = props.frontLat;
+  const frontLon = props.frontLon;
 
   const [forceLocation, setForceLocation] = useState(true);
   const [highAccuracy, setHighAccuracy] = useState(true);
@@ -208,17 +211,34 @@ export default function Location(props) {
     // convert to yards
     let yardarge = milesDiff * 1760;
     // return yardage
-    return yardarge;
+    return yardarge.toFixed(0);
   };
 
+  const frontYardage = getYardage(
+    frontLon,
+    frontLat,
+    location?.coords?.longitude,
+    location?.coords?.latitude,
+  );
+  const centerYardage = getYardage(
+    centerLon,
+    centerLat,
+    location?.coords?.longitude,
+    location?.coords?.latitude,
+  );
+  const backYardage = getYardage(
+    backLon,
+    backLat,
+    location?.coords?.longitude,
+    location?.coords?.latitude,
+  );
+
   return (
-    <View style={styles.mainContainer}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
-        <View style={styles.buttonContainer}>
+    <View>
+      <ScrollView>
+        <View>
           <Button title="Get Location" onPress={getLocation} />
-          <View style={styles.buttons}>
+          <View>
             <Button
               title="Start Observing"
               onPress={getLocationUpdates}
@@ -231,7 +251,7 @@ export default function Location(props) {
             />
           </View>
         </View>
-        <View style={styles.result}>
+        <View>
           <Text>Latitude: {location?.coords?.latitude || ''}</Text>
           <Text>Longitude: {location?.coords?.longitude || ''}</Text>
           <Text>Heading: {location?.coords?.heading}</Text>
@@ -241,52 +261,19 @@ export default function Location(props) {
           <Text>Speed: {location?.coords?.speed}</Text>
           <Text>Provider: {location?.provider || ''}</Text>
           <Text>
-            Distance to Hole:{' '}
-            {getYardage(
-              currentHoleLongitude,
-              currentHoleLatitude,
-              location?.coords?.longitude,
-              location?.coords?.latitude,
-            )}{' '}
-            yards
+            Back: {backYardage}
+            {'\n'}
+            Center: {centerYardage}
+            {'\n'}
+            Front: {frontYardage}
+            {'\n'}
           </Text>
         </View>
       </ScrollView>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#F5FCFF',
-  },
-  contentContainer: {
-    padding: 12,
-  },
-  option: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 12,
-  },
-  result: {
-    borderWidth: 1,
-    borderColor: '#666',
-    width: '100%',
-    padding: 10,
-  },
-  buttonContainer: {
-    alignItems: 'center',
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginVertical: 12,
-    width: '100%',
-  },
-});
+const styles = StyleSheet.create({});
+
+export default Location;

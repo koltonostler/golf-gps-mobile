@@ -1,181 +1,68 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-import firestore from '@react-native-firebase/firestore';
+import * as React from 'react';
+import {Button, View, Text} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Home from './components/Home';
 import Location from './components/Location';
-import React, {useState} from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  useColorScheme,
-  View,
-} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
- * LTI update could not be added via codemod */
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
-
-async function getCourse() {
-  const courseDocument = await firestore()
-    .collection('Courses')
-    .doc('a0KdZWopIoyCVb7O9NYd')
-    .get();
-  return courseDocument;
-}
-
-// async function getHoleGPS() {
-//   await firestore().collection('Courses').doc('a0KdZWopIoyCVb7O9NYd').collection().get()
+// function HomeScreen({navigation}) {
+//   return (
+//     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+//       <Text>Home Screen</Text>
+//       <Button
+//         title="Go to Details"
+//         onPress={() => navigation.navigate('Details')}
+//       />
+//     </View>
+//   );
 // }
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  const [currentCourse, setCurrentCourse] = useState('');
-  const [currentHoleLatitude, setCurrentHoleLatitude] = useState();
-  const [currentHoleLongitude, setCurrentHoleLongitude] = useState();
-
-  const getCurrentHoleCoordinates = (data, holeNum) => {
-    setCurrentHoleLatitude(data.Hole_GPS[holeNum].coordinate.latitude);
-    setCurrentHoleLongitude(data.Hole_GPS[holeNum].coordinate.longitude);
-  };
-
-  async function updateGPSData() {
-    try {
-      await getCourse().then(documentSnapshot => {
-        setCurrentCourse(documentSnapshot.data().Course);
-        getCurrentHoleCoordinates(documentSnapshot.data(), holeNumber);
-      });
-    } catch (err) {}
-  }
-
-  updateGPSData();
-
-  const [holeNumber, onChangeNumber] = useState(null);
-
+function DetailsScreen({navigation}) {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      <Text>Details Screen</Text>
+      <Button
+        title="Go to Details... again"
+        onPress={() => navigation.push('Details')}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <View style={styles.container}>
-            <Text style={styles.h1}>Golf GPS App</Text>
-          </View>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber}
-            value={holeNumber}
-            placeholder="input hole number"
-            keyboardType="numeric"
-          />
-          <View style={styles.container}>
-            <Section style={styles.sectionDescription} title="GPS Coordinates">
-              <Text>
-                Course Name: {currentCourse}
-                {'\n'}
-                Hole Number: {holeNumber}
-                {'\n'}
-                Longitude: {currentHoleLatitude}
-                {'\n'}
-                Latitude: {currentHoleLongitude}
-                {'\n'}
-              </Text>
-            </Section>
-          </View>
-          <Location lat={currentHoleLatitude} lon={currentHoleLongitude} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
+      <Button
+        title="Go to Location"
+        onPress={() => navigation.navigate('Location')}
+      />
+      <Button title="Go back" onPress={() => navigation.goBack()} />
+      <Button
+        title="Go back to first screen in stack"
+        onPress={() => navigation.popToTop()}
+      />
+    </View>
   );
-};
+}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  h1: {
-    fontSize: 50,
-    fontWeight: '700',
-    color: 'blue',
-    margin: 25,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    alignSelf: 'center',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+const Stack = createNativeStackNavigator();
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Details"
+          component={DetailsScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Location"
+          component={Location}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 export default App;
