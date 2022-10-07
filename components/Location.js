@@ -1,21 +1,28 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {
+  Switch,
   Alert,
   Button,
   Linking,
   PermissionsAndroid,
   Platform,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
   ToastAndroid,
   View,
+  TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
 
 import appConfig from '../app.json';
 
-const Location = props => {
+const Location = (props, {navigation}) => {
   const centerLat = props.centerLat;
   const centerLon = props.centerLon;
   const backLat = props.backLat;
@@ -30,6 +37,7 @@ const Location = props => {
   const [observing, setObserving] = useState(false);
   const [useLocationManager, setUseLocationManager] = useState(false);
   const [location, setLocation] = useState(null);
+  const [modalVisible, setModalVisable] = useState(false);
 
   const watchId = useRef(null);
 
@@ -37,7 +45,7 @@ const Location = props => {
     return () => {
       removeLocationUpdates();
     };
-  }, [removeLocationUpdates]);
+  }, [removeLocationUpdates, getLocation]);
 
   const hasPermissionIOS = async () => {
     const openSetting = () => {
@@ -186,6 +194,18 @@ const Location = props => {
     }
   }, []);
 
+  const toggleLocationUpdates = () => {
+    if (!observing) {
+      getLocationUpdates();
+    } else {
+      removeLocationUpdates();
+    }
+  };
+
+  useEffect(() => {
+    getLocation();
+  }, []);
+
   const getYardage = (holeLon, holeLat, userLon, userLat) => {
     //convert coordinates to Radians
     holeLon = (holeLon * Math.PI) / 180;
@@ -234,46 +254,202 @@ const Location = props => {
   );
 
   return (
-    <View>
-      <ScrollView>
-        <View>
-          <Button title="Get Location" onPress={getLocation} />
-          <View>
-            <Button
-              title="Start Observing"
-              onPress={getLocationUpdates}
-              disabled={observing}
-            />
-            <Button
-              title="Stop Observing"
-              onPress={removeLocationUpdates}
-              disabled={!observing}
+    <View style={styles.location_container}>
+      <View style={styles.yardage_container}>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 10,
+          }}>
+          <View style={styles.back_box}>
+            <Text style={styles.back_text}>Back</Text>
+          </View>
+          <Text style={styles.back_yardage}>
+            {!isNaN(backYardage) ? backYardage : ''}
+          </Text>
+        </View>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View style={styles.center_box}>
+            <Text style={styles.center_text}>Center of Green</Text>
+          </View>
+          <Text style={styles.center_yardage}>
+            {!isNaN(centerYardage) ? centerYardage : ''}
+          </Text>
+        </View>
+        <View
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View style={styles.back_box}>
+            <Text style={styles.back_text}>Front</Text>
+          </View>
+          <Text style={styles.back_yardage}>
+            {!isNaN(frontYardage) ? frontYardage : ''}
+          </Text>
+        </View>
+      </View>
+      <TouchableOpacity onPress={getLocation} style={styles.button_container}>
+        <Text
+          style={{
+            fontSize: 24,
+            fontFamily: 'Jaldi-Regular',
+            letterSpacing: 0.08,
+          }}>
+          Get Yardage
+        </Text>
+      </TouchableOpacity>
+
+      <Text style={styles.select_hole}>Select Hole</Text>
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisable(false)}>
+        <View style={{backgroundColor: 'rgba(0, 0, 0, 0.70)', flex: 1}}>
+          <View style={styles.modal_container}>
+            <View style={styles.switch_container}>
+              <Switch onValueChange={toggleLocationUpdates} value={observing} />
+              <Text style={styles.always_on_text}>GPS Always On</Text>
+            </View>
+            <Icon
+              name="close"
+              size={30}
+              color="#CCCCCC"
+              onPress={() => setModalVisable(false)}
             />
           </View>
         </View>
-        <View>
-          <Text>Latitude: {location?.coords?.latitude || ''}</Text>
-          <Text>Longitude: {location?.coords?.longitude || ''}</Text>
-          <Text>Heading: {location?.coords?.heading}</Text>
-          <Text>Accuracy: {location?.coords?.accuracy}</Text>
-          <Text>Altitude: {location?.coords?.altitude}</Text>
-          <Text>Altitude Accuracy: {location?.coords?.altitudeAccuracy}</Text>
-          <Text>Speed: {location?.coords?.speed}</Text>
-          <Text>Provider: {location?.provider || ''}</Text>
-          <Text>
-            Back: {backYardage}
-            {'\n'}
-            Center: {centerYardage}
-            {'\n'}
-            Front: {frontYardage}
-            {'\n'}
-          </Text>
-        </View>
-      </ScrollView>
+      </Modal>
+      <View style={styles.bottom_nav}>
+        <Icon
+          name="settings"
+          size={30}
+          color="#CCCCCC"
+          onPress={() => setModalVisable(true)}
+        />
+      </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  location_container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  back_box: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 35,
+    borderBottomColor: '#00655F',
+    borderBottomWidth: 2,
+  },
+  back_text: {
+    fontSize: 20,
+    fontFamily: 'Recursive-Regular',
+    letterSpacing: 0.08,
+  },
+  back_yardage: {
+    fontSize: 40,
+    fontFamily: 'Recursive-Regular',
+  },
+  center_box: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 175,
+    height: 45,
+    borderBottomColor: '#00655F',
+    borderBottomWidth: 2,
+  },
+  center_text: {
+    fontSize: 24,
+    fontFamily: 'Recursive-Regular',
+    letterSpacing: 0.08,
+  },
+  center_yardage: {
+    fontSize: 96,
+    fontFamily: 'Recursive-Regular',
+  },
+  yardage_container: {
+    bottom: 50,
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    height: 325,
+    width: 325,
+  },
+  always_on_text: {
+    fontFamily: 'Jaldi-Regular',
+    fontSize: 20,
+  },
+  switch_container: {
+    textAlign: 'center',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: 175,
+  },
+  select_hole: {
+    position: 'absolute',
+    width: 185,
+    height: 35,
+    bottom: 125,
+    fontFamily: 'Jaldi-Regular',
+    fontSize: 20,
+    letterSpacing: 0.08,
+    textAlign: 'center',
+  },
+  button_container: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#00655F',
+    position: 'absolute',
+    bottom: 165,
+    height: 45,
+    width: 180,
+    borderColor: '#CCCCCC',
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  modal_container: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    height: 60,
+    width: '100%',
+    paddingHorizontal: 20,
+    backgroundColor: '#252525',
+  },
+  bottom_nav: {
+    display: 'flex',
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 0,
+    height: 60,
+    width: '100%',
+    paddingHorizontal: 50,
+    backgroundColor: '#151516',
+  },
+});
 
 export default Location;

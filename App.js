@@ -1,11 +1,15 @@
+import 'react-native-gesture-handler';
+import {TransitionSpecs} from '@react-navigation/stack';
 import * as React from 'react';
 import {Button, View, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import Home from './components/Home';
 import Mainapp from './components/Mainapp';
 
-function DetailsScreen({navigation}) {
+function DetailsScreen({route, navigation}) {
+  const {courseId} = route.params;
   return (
     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
       <Text>Details Screen</Text>
@@ -16,7 +20,7 @@ function DetailsScreen({navigation}) {
       <Button title="Go to Home" onPress={() => navigation.navigate('Home')} />
       <Button
         title="Go to Main"
-        onPress={() => navigation.navigate('Mainapp')}
+        onPress={() => navigation.navigate('Mainapp', {courseId: courseId})}
       />
       <Button title="Go back" onPress={() => navigation.goBack()} />
       <Button
@@ -27,7 +31,7 @@ function DetailsScreen({navigation}) {
   );
 }
 
-const Stack = createNativeStackNavigator();
+const Stack = createStackNavigator();
 
 function App() {
   return (
@@ -41,7 +45,12 @@ function App() {
         <Stack.Screen
           name="Details"
           component={DetailsScreen}
-          options={{headerShown: false}}
+          options={{
+            transitionSpec: {
+              open: TransitionSpecs.TransitionIOSSpec,
+              close: TransitionSpecs.TransitionIOSSpec,
+            },
+          }}
         />
         <Stack.Screen
           name="Mainapp"
