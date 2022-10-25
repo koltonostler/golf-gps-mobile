@@ -5,6 +5,7 @@
 Golf GPS is an Android application created using React-Native that allows the user to get the yardage from their current device location to the center, front, and back of the selected green.  Courses are imported using Firebase Firestore - a NoSQL database populated by myself with a few local golf courses.    
 
 
+
 <details>
 <summary>App Preview</summary>
 
@@ -13,6 +14,8 @@ Golf GPS is an Android application created using React-Native that allows the us
     <img src="https://user-images.githubusercontent.com/95270713/197870647-cb975b3d-b992-4b1e-9e3e-c46e32c348d2.png">
   </p>
 </details>
+
+#### Video Demo: https://youtu.be/sXMriEYPeRQ
 
 Calculations for the distance between coordinates was done using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula).
 
