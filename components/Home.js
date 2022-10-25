@@ -1,24 +1,26 @@
 import firestore from '@react-native-firebase/firestore';
 import * as React from 'react';
 import {useState, useEffect} from 'react';
-import Mainapp from './Mainapp';
 
 import {StyleSheet, Button, View, Text, ScrollView} from 'react-native';
 
 function Home({navigation}) {
-  const [currentCourseId, setCurrentCourseId] = useState('');
   let [courseList, updateCourseList] = useState([]);
 
+  // get courses from firestore database
   async function getCourses() {
     await firestore()
       .collection('Courses')
       .get()
       .then(querySnapshot => {
+        // loop over every course in the 'Courses' collection in the firestore database and add course to courseList[]
         querySnapshot.forEach(doc => {
           try {
             tempDoc = [];
             let courseData = doc.data();
             const holeCount = Object.keys(courseData.Hole_GPS).length;
+            // push course jsx template to a tempDoc that can be added to courseList Array, will add
+            // courseList to scroll view to populate all courses
             tempDoc.push(
               <View style={styles.course_container} key={doc.id}>
                 <Text style={styles.course_name}>{courseData.Course}</Text>
@@ -36,7 +38,8 @@ function Home({navigation}) {
                     title="Select"
                     textTitle={{fontFamily: 'Jaldi-Regular'}}
                     onPress={() => {
-                      setCurrentCourseId(doc.id);
+                      // navigate to selected course and add props to pass to main app so
+                      // that the selected course is loaded and have hole count to populate holes in scroll view
                       navigation.navigate('Mainapp', {
                         courseId: doc.id,
                         holeCt: holeCount,
@@ -46,6 +49,7 @@ function Home({navigation}) {
                 </View>
               </View>,
             );
+            // add new course(temp Doc) to list of courses
             updateCourseList(oldCourses => [...oldCourses, tempDoc]);
           } catch (err) {
             console.log(
@@ -55,7 +59,7 @@ function Home({navigation}) {
         });
       });
   }
-  
+
   useEffect(() => {
     getCourses();
   }, []);
@@ -68,6 +72,7 @@ function Home({navigation}) {
         <Text style={styles.header}>GOLF GPS</Text>
       </View>
       <Text style={styles.select_course}>Select Course</Text>
+      {/* Scroll View will populate all courses in courseList from database */}
       <ScrollView style={styles.scroll_container}>{courseList}</ScrollView>
     </View>
   );

@@ -1,28 +1,22 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {
   Switch,
   Alert,
-  Button,
   Linking,
   PermissionsAndroid,
   Platform,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   ToastAndroid,
   View,
-  TouchableOpacity,
-  useWindowDimensions,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-
 import appConfig from '../app.json';
 
-const Location = (props, {navigation}) => {
+const Location = props => {
+  // get props from Mainapp component
   const centerLat = props.centerLat;
   const centerLon = props.centerLon;
   const backLat = props.backLat;
@@ -30,22 +24,18 @@ const Location = (props, {navigation}) => {
   const frontLat = props.frontLat;
   const frontLon = props.frontLon;
 
-  const [forceLocation, setForceLocation] = useState(true);
-  const [highAccuracy, setHighAccuracy] = useState(true);
-  const [locationDialog, setLocationDialog] = useState(true);
-  const [significantChanges, setSignificantChanges] = useState(false);
+  // initialize state variables for location
   const [observing, setObserving] = useState(false);
-  const [useLocationManager, setUseLocationManager] = useState(false);
   const [location, setLocation] = useState(null);
   const [modalVisible, setModalVisable] = useState(false);
-
   const watchId = useRef(null);
 
+  // location permission setup.  From https://github.com/Agontuk/react-native-geolocation-service
   useEffect(() => {
     return () => {
       removeLocationUpdates();
     };
-  }, [removeLocationUpdates, getLocation]);
+  }, [removeLocationUpdates]);
 
   const hasPermissionIOS = async () => {
     const openSetting = () => {
@@ -118,38 +108,6 @@ const Location = (props, {navigation}) => {
     return false;
   };
 
-  const getLocation = async () => {
-    const hasPermission = await hasLocationPermission();
-
-    if (!hasPermission) {
-      return;
-    }
-
-    Geolocation.getCurrentPosition(
-      position => {
-        setLocation(position);
-      },
-      error => {
-        Alert.alert(`Code ${error.code}`, error.message);
-        setLocation(null);
-        console.log(error);
-      },
-      {
-        accuracy: {
-          android: 'high',
-          ios: 'best',
-        },
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
-        distanceFilter: 0,
-        forceRequestLocation: forceLocation,
-        forceLocationManager: useLocationManager,
-        showLocationDialog: locationDialog,
-      },
-    );
-  };
-
   const getLocationUpdates = async () => {
     const hasPermission = await hasLocationPermission();
 
@@ -172,14 +130,9 @@ const Location = (props, {navigation}) => {
           android: 'high',
           ios: 'best',
         },
-        enableHighAccuracy: highAccuracy,
         distanceFilter: 0,
         interval: 100,
         fastestInterval: 100,
-        forceRequestLocation: forceLocation,
-        forceLocationManager: useLocationManager,
-        showLocationDialog: locationDialog,
-        useSignificantChanges: significantChanges,
       },
     );
   };
@@ -201,9 +154,10 @@ const Location = (props, {navigation}) => {
   };
 
   useEffect(() => {
-    getLocation();
+    getLocationUpdates();
   }, []);
 
+  // calculate distances using Haversine Formula for the current user location and current hole coordinates.
   const getYardage = (holeLon, holeLat, userLon, userLat) => {
     //convert coordinates to Radians
     holeLon = (holeLon * Math.PI) / 180;
@@ -232,6 +186,7 @@ const Location = (props, {navigation}) => {
     return yardarge.toFixed(0);
   };
 
+  // store all yardages in variables calling the getYardage function
   const frontYardage = getYardage(
     frontLon,
     frontLat,
@@ -295,17 +250,6 @@ const Location = (props, {navigation}) => {
           </Text>
         </View>
       </View>
-      <TouchableOpacity onPress={getLocation} style={styles.button_container}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontFamily: 'Jaldi-Regular',
-            letterSpacing: 0.08,
-          }}>
-          Get Yardage
-        </Text>
-      </TouchableOpacity>
-
       <Text style={styles.select_hole}>Select Hole</Text>
       <Modal
         transparent={true}
@@ -316,7 +260,7 @@ const Location = (props, {navigation}) => {
           <View style={styles.modal_container}>
             <View style={styles.switch_container}>
               <Switch onValueChange={toggleLocationUpdates} value={observing} />
-              <Text style={styles.always_on_text}>GPS Always On</Text>
+              <Text style={styles.always_on_text}>Toggle GPS</Text>
             </View>
             <Icon
               name="close"
@@ -346,6 +290,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   back_box: {
+    bottom: 10,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -360,7 +305,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.08,
   },
   back_yardage: {
-    fontSize: 40,
+    bottom: 12,
+    fontSize: 50,
     fontFamily: 'Recursive-Regular',
   },
   center_box: {
@@ -376,18 +322,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: 'Recursive-Regular',
     letterSpacing: 0.08,
+    includeFontPadding: false,
   },
   center_yardage: {
-    fontSize: 96,
+    bottom: 20,
+    fontSize: 120,
     fontFamily: 'Recursive-Regular',
   },
   yardage_container: {
-    bottom: 50,
+    bottom: 10,
     display: 'flex',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    height: 325,
-    width: 325,
+    height: 350,
+    width: 350,
   },
   always_on_text: {
     fontFamily: 'Jaldi-Regular',

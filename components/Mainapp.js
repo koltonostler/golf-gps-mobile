@@ -1,20 +1,22 @@
 import firestore from '@react-native-firebase/firestore';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import React, {useState} from 'react';
 import {StyleSheet, Text, Pressable, View, ScrollView} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+
 import Location from './Location';
 
-const Mainapp = ({route, navigation}) => {
+const Mainapp = ({route}) => {
   const {courseId} = route.params;
   const {holeCt} = route.params;
 
   let holeCountArr = [];
 
+  // add holes to holeCountArr
   for (let i = 1; i <= holeCt; i++) {
     holeCountArr.push(i);
   }
 
+  // get the course using the courseId that was passed as a prop from Home page when course was selected.
   async function getCourse() {
     const courseDocument = await firestore()
       .collection('Courses')
@@ -23,6 +25,8 @@ const Mainapp = ({route, navigation}) => {
     return courseDocument;
   }
 
+  // initialize state variables to store data from firestore database for selected course
+
   const [currentCourse, setCurrentCourse] = useState('');
   const [frontLatitude, setFrontLatitude] = useState();
   const [frontLongitude, setFrontLongitude] = useState();
@@ -30,7 +34,9 @@ const Mainapp = ({route, navigation}) => {
   const [centerLongitude, setCenterLongitude] = useState();
   const [backLatitude, setBackLatitude] = useState();
   const [backLongitude, setBackLongitude] = useState();
+  const [holeNumber, onChangeHole] = useState(1);
 
+  // set the current hole coordinates
   const getCurrentHoleCoordinates = (data, holeNum) => {
     setFrontLatitude(data.Hole_GPS[holeNum].front.latitude);
     setFrontLongitude(data.Hole_GPS[holeNum].front.longitude);
@@ -40,7 +46,8 @@ const Mainapp = ({route, navigation}) => {
     setBackLongitude(data.Hole_GPS[holeNum].back.longitude);
   };
 
-  async function updateGPSData() {
+  // set the current course and current hole coordinates
+  async function updateCourseData() {
     try {
       await getCourse().then(documentSnapshot => {
         setCurrentCourse(documentSnapshot.data().Course);
@@ -49,15 +56,14 @@ const Mainapp = ({route, navigation}) => {
     } catch (err) {}
   }
 
-  updateGPSData();
-
-  const [holeNumber, onChangeHole] = useState(1);
+  updateCourseData();
 
   return (
     <View style={{flex: 1, backgroundColor: '#100F11'}}>
       <View style={styles.main_container}>
         <View style={styles.circle}></View>
         <Text style={styles.header}>{currentCourse}</Text>
+        {/* pass coordinates for current hole to location component for calculations */}
         <Location
           frontLat={frontLatitude}
           frontLon={frontLongitude}
@@ -67,6 +73,7 @@ const Mainapp = ({route, navigation}) => {
           backLon={backLongitude}
         />
         <ScrollView horizontal={true} style={styles.scroll_container}>
+          {/* map holes for scroll view using the holeCountArr  */}
           {holeCountArr.map(hole => {
             return (
               <Pressable
@@ -86,46 +93,9 @@ const Mainapp = ({route, navigation}) => {
               </Pressable>
             );
           })}
-          {/* <View style={styles.holes}>
-            <Text style={styles.number}>1</Text>
-          </View> */}
-          {/* <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View>
-          <View style={styles.holes}></View> */}
         </ScrollView>
       </View>
     </View>
-
-    // <View style={styles.main_container}>
-    //   <TextInput
-    //     style={styles.input}
-    //     onChangeText={onChangeHole}
-    //     value={holeNumber}
-    //     placeholder="input hole number"
-    //     keyboardType="numeric"
-    //   />
-    //   <View style={styles.container}>
-    //     <Text>
-    //       Course Name: {currentCourse}
-    //       {'\n'}
-    //       Hole Number: {holeNumber}
-    //       {'\n'}
-    //       Longitude: {frontLatitude}
-    //       {'\n'}
-    //       Latitude: {frontLongitude}
-    //       {'\n'}
-    //     </Text>
-    //   </View>
-    //   <View>
-
-    //   </View>
-    // </View>
   );
 };
 
@@ -165,12 +135,12 @@ const styles = StyleSheet.create({
   number_selected: {
     color: '#CCCCCC',
     fontFamily: 'Inter',
-    fontSize: 34,
+    fontSize: 30,
   },
   number_unselected: {
     color: 'black',
     fontFamily: 'Inter',
-    fontSize: 34,
+    fontSize: 30,
   },
   scroll_container: {
     display: 'flex',
@@ -206,7 +176,7 @@ const styles = StyleSheet.create({
     height: 450,
     borderRadius: 450 / 2,
     backgroundColor: '#252525',
-    top: 100,
+    top: 130,
   },
   background_square: {
     position: 'absolute',
