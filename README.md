@@ -17,6 +17,14 @@ Golf GPS is an Android application created using React-Native that allows the us
 
 #### Video Demo: https://youtu.be/sXMriEYPeRQ
 
+### Application Details
+
+The application has two main screens: a Home screen and a GPS/location screen.  The home screen will search the 'Courses' Collection of the connected firebase firestore database and display any courses contained in the database.  Once you select the course you will be taken to the GPS/location screen.  This screen will display the distance to the select hole from your current location.  
+
+If it is the first time using the App, location permissions will be requested.  If not approved then the application will not be able to update any of the GPS and location information.  The number of holes is populated based on the number of holes in the selected course. 
+
+The application is set to update location automatically, but you can toggle the GPS off by using the options in the bottom right of the app.  If the GPS is toggled off, it will display the last updated location as the distance to the hole.   
+
 Calculations for the distance between coordinates was done using the [Haversine formula](https://en.wikipedia.org/wiki/Haversine_formula).
 
 ## Environment Setup
