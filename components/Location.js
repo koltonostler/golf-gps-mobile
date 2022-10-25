@@ -128,7 +128,6 @@ const Location = (props, {navigation}) => {
     Geolocation.getCurrentPosition(
       position => {
         setLocation(position);
-        console.log(position);
       },
       error => {
         Alert.alert(`Code ${error.code}`, error.message);
@@ -163,7 +162,6 @@ const Location = (props, {navigation}) => {
     watchId.current = Geolocation.watchPosition(
       position => {
         setLocation(position);
-        console.log(position);
       },
       error => {
         setLocation(null);
@@ -176,8 +174,8 @@ const Location = (props, {navigation}) => {
         },
         enableHighAccuracy: highAccuracy,
         distanceFilter: 0,
-        interval: 10,
-        fastestInterval: 10,
+        interval: 100,
+        fastestInterval: 100,
         forceRequestLocation: forceLocation,
         forceLocationManager: useLocationManager,
         showLocationDialog: locationDialog,
